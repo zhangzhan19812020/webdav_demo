@@ -150,13 +150,7 @@ public class WebdavUtil {
         is.close();
 
         fos.close();
-//
-//        Sardine sardine = getSardine();
-//        String url = server + path;
-//
-//        byte[] b = IOUtils.toByteArray(is);
-//        sardine.shutdown();
-//        return b;
+
     }
 
 

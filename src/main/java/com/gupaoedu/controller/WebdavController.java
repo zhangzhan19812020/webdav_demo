@@ -70,7 +70,16 @@ public class WebdavController {
 
     @PostMapping("/upload")
     public WebdavUtil.ResultData upload(String path, MultipartFile file) {
-        return new WebdavUtil.ResultData(WebdavUtil.ResultData.successCode, file.getName() +"--" + file.getOriginalFilename() + "---" + path, "");
+
+        try {
+            WebdavUtil.WebDavNode webDavNode = util.upload(path, file);
+            return new WebdavUtil.ResultData(WebdavUtil.ResultData.successCode, webDavNode, "");
+        } catch (IOException e) {
+            logger.info(e.getMessage());
+            return new WebdavUtil.ResultData(WebdavUtil.ResultData.failCode, null, e.getMessage());
+        }
+
+
 
 //        try {
 //            String removePath = util.delete(path);
