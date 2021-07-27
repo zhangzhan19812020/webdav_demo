@@ -78,16 +78,6 @@ public class WebdavController {
             logger.info(e.getMessage());
             return new WebdavUtil.ResultData(WebdavUtil.ResultData.failCode, null, e.getMessage());
         }
-
-
-
-//        try {
-//            String removePath = util.delete(path);
-//            return new WebdavUtil.ResultData(WebdavUtil.ResultData.successCode, removePath, "");
-//        } catch (IOException e) {
-//            logger.info(e.getMessage());
-//            return new WebdavUtil.ResultData(WebdavUtil.ResultData.failCode, null, e.getMessage());
-//        }
     }
 
 }
