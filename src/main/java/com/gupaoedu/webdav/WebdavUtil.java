@@ -7,9 +7,14 @@ import com.github.sardine.SardineFactory;
 
 import com.gupaoedu.serializer.TimeStampFormatSerializer;
 import com.gupaoedu.util.StringHelper;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -118,7 +123,7 @@ public class WebdavUtil {
         String fileName = StringHelper.getFileName(file.getOriginalFilename());
         String fileExtensionName = StringHelper.getFileExtensionName(fileName);
 
-        String webDavFileName = calendar.get(Calendar.HOUR) + "_" + calendar.get(Calendar.MINUTE);
+        String webDavFileName = calendar.get(Calendar.HOUR) + "_" + calendar.get(Calendar.MINUTE) + "_";
         webDavFileName += calendar.get(Calendar.SECOND) + "_" + calendar.get(Calendar.MILLISECOND);
 
         if(!StringHelper.isNullOrEmpty(fileExtensionName)) {
@@ -132,25 +137,22 @@ public class WebdavUtil {
     }
 
 
-    public void getFileBytes(String path) throws Exception {
-        String url = server + "/ddd/fuck.you";
-        InputStream is = sardine.get(url);
-        FileOutputStream fos = new FileOutputStream("E:\\b.txt");
-
-        byte[] b = new byte[1024];
-
-        int length;
-
-        while((length = is.read(b))>0){
-
-            fos.write(b,0,length);
-
-        }
-
-        is.close();
-
-        fos.close();
-
+    /**
+     * 下载指定路径的文件
+     * @param path
+     * @return
+     * @throws IOException
+     */
+    public ResponseEntity<byte[]> download(String path) throws IOException {
+        path = StringHelper.isNullOrEmpty(path) ? "/" :  (path.startsWith("/") ? path : "/" + path);
+        
+        InputStream is = sardine.get(server + path);
+        String fileName = path.substring(path.lastIndexOf("/") + 1, path.length());
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + new String(fileName.getBytes("gbk"), "iso-8859-1") + "\"");
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        byte[] bytes = IOUtils.toByteArray(is);
+        return new ResponseEntity<>(bytes, headers, HttpStatus.OK);
     }
 
 

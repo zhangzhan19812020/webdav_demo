@@ -6,9 +6,11 @@ import com.gupaoedu.webdav.WebdavUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -77,6 +79,18 @@ public class WebdavController {
         } catch (IOException e) {
             logger.info(e.getMessage());
             return new WebdavUtil.ResultData(WebdavUtil.ResultData.failCode, null, e.getMessage());
+        }
+    }
+
+    @GetMapping("/download")
+    public ResponseEntity<byte[]> download(String path, HttpServletResponse response) {
+        response.setHeader("Cache-Control", "max-age=-1");
+        response.setHeader("Pragma", "public");
+        try {
+            return util.download(path);
+        } catch (IOException e) {
+            logger.info(e.getMessage());
+            return null;
         }
     }
 
